@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do List</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap">
+    <style>
+        body { 
+            font-family: 'Poppins', sans-serif;
+            background-color: #FFFAF0; 
+            margin: 0; 
+            padding: 0; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh;
+            flex-direction: column;
+        }
+        h1 { 
+            color: #FF69B4; 
+            margin-bottom: 20px; 
+            text-align: center;
+        }
+        form, .task { 
+            margin-bottom: 20px; 
+        }
+        label { 
+            font-weight: 600; 
+            color: #FF69B4; 
+            margin-right: 10px; 
+        }
+        input, select, button { 
+            padding: 5px; 
+            margin-top: 5px; 
+            border: 1px solid #FF69B4; 
+            border-radius: 5px;
+        }
+        .task-list { 
+            margin-top: 20px; 
+            width: 80%; 
+            max-width: 600px; 
+        }
+        .task { 
+            background-color: #FFF0F5; 
+            padding: 10px; 
+            border-radius: 5px; 
+            margin-bottom: 10px; 
+        }
+        .task-title { 
+            font-size: 1.2em; 
+            margin-bottom: 5px; 
+        }
+        .cute-button { 
+            background-color: #FF69B4; 
+            color: white; 
+            border: none; 
+            padding: 5px 10px; 
+            border-radius: 5px; 
+            cursor: pointer; 
+        }
+        .cute-button:hover { 
+            background-color: #FF1493; 
+        }
+        .filter-buttons { 
+            margin-bottom: 10px; 
+        }
+    </style>
+</head>
+<body>
+    <h1>💖 To-Do List 💖</h1>
+    <form action="/add" method="POST">
+        <label>Task:</label>
+        <input type="text" name="task" required>
+        
+        <label>Due Date:</label>
+        <input type="date" name="due_date">
+
+        <label>Status:</label>
+        <select name="status">
+            <option value="For Later">For Later</option>
+            <option value="In Progress">In Progress</option>
+            <option value="Completed">Completed</option>
+        </select>
+        
+        <button class="cute-button" type="submit">Add Task</button>
+    </form>
+
+    <div class="filter-buttons">
+        <a href="/" class="cute-button">All</a>
+        <a href="/?filter=For Later" class="cute-button">For Later</a>
+        <a href="/?filter=In Progress" class="cute-button">In Progress</a>
+        <a href="/?filter=Completed" class="cute-button">Completed</a>
+    </div>
+
+    <div class="task-list">
+        {% for task in tasks %}
+        <div class="task">
+            <div class="task-title">{{ task.name }}</div>
+            <div>Date Added: {{ task.date_added }}</div>
+            <form action="/update_due_date/{{ loop.index0 }}" method="POST" style="display:inline;">
+                <label>Due Date:</label>
+                <input type="date" name="due_date" value="{{ task.due_date }}">
+                <button class="cute-button" type="submit">Update</button>
+            </form>
+            
+            <form action="/update_status/{{ loop.index0 }}" method="POST" style="display:inline;">
+                <label>Status:</label>
+                <select name="status" onchange="this.form.submit()">
+                    <option value="For Later" {% if task.status == 'For Later' %}selected{% endif %}>For Later</option>
+                    <option value="In Progress" {% if task.status == 'In Progress' %}selected{% endif %}>In Progress</option>
+                    <option value="Completed" {% if task.status == 'Completed' %}selected{% endif %}>Completed</option>
+                </select>
+            </form>
+
+            <form action="/delete/{{ loop.index0 }}" method="GET" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this task?');">
+                <button class="cute-button" type="submit">Delete 🗑️</button>
+            </form>
+        </div>
+        {% endfor %}
+    </div>
+</body>
+</html>
